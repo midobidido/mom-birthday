@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Soul Profile — For Mom</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold: #d4a574;
+    --cream: #f5efe6;
+    --bg: #1a1410;
+    --card: #221c15;
+    --muted: #a89580;
+    --body: #c4b8a8;
+    --dim: #7a6555;
+    --deep: #2a1f17;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .app {
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Progress dots */
+  .dots {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 7px;
+    z-index: 10;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 4px;
+    background: #3d2b1f;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.4s ease;
+  }
+  .dot.active {
+    width: 24px;
+    background: var(--gold);
+  }
+
+  /* Content scroll area */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    -webkit-overflow-scrolling: touch;
+  }
+  .content.fading {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  /* Navigation bar */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px 22px;
+    border-top: 1px solid #2a2218;
+    background: var(--bg);
+    flex-shrink: 0;
+  }
+  .nav-btn {
+    background: transparent;
+    border: 1px solid #3d2b1f;
+    color: var(--muted);
+    padding: 11px 24px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+    min-width: 100px;
+    text-align: center;
+  }
+  .nav-btn.primary {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--bg);
+    font-weight: 700;
+  }
+  .nav-counter {
+    font-size: 12px;
+    color: #3d2b1f;
+  }
+
+  /* Page wrapper */
+  .page {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 48px 24px 32px;
+  }
+
+  /* Cover page */
+  .cover {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px;
+    background: radial-gradient(ellipse at 30% 40%, #2a1f17 0%, var(--bg) 70%);
+  }
+  .cover-inner {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 1.4s ease;
+  }
+  .cover-inner.show { opacity: 1; transform: translateY(0); }
+
+  .cover .label {
+    font-size: 11px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+  }
+  .heart-circle {
+    width: 96px; height: 96px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), #b8956a);
+    margin: 0 auto 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    line-height: 1;
+  }
+  .cover h1 {
+    font-size: clamp(36px, 8vw, 56px);
+    font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .cover .subtitle {
+    font-size: 16px;
+    color: var(--muted);
+    font-style: italic;
+    margin: 14px 0 6px;
+  }
+  .cover .date {
+    font-size: 13px;
+    color: var(--dim);
+  }
+  .cover .divider {
+    width: 40px; height: 1px;
+    background: var(--gold);
+    margin: 28px auto;
+  }
+  .cover .from {
+    font-size: 13px;
+    color: var(--dim);
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+  .open-btn {
+    background: var(--gold);
+    border: none;
+    color: var(--bg);
+    padding: 15px 44px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+
+  /* Section elements */
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .section-title {
+    font-size: clamp(26px, 5vw, 34px);
+    font-weight: 400;
+    line-height: 1.25;
+    margin-bottom: 12px;
+  }
+  .section-divider {
+    width: 40px; height: 1px;
+    background: var(--gold);
+    margin: 18px 0 28px;
+  }
+
+  .body-text {
+    font-size: 17px;
+    line-height: 1.85;
+    color: var(--body);
+    margin-bottom: 22px;
+  }
+  .body-text.large { font-size: 19px; }
+  .body-text.accent {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  .quote {
+    border-left: 2px solid var(--gold);
+    padding-left: 22px;
+    margin: 28px 0;
+    font-size: 19px;
+    line-height: 1.7;
+    color: var(--cream);
+    font-style: italic;
+  }
+
+  .info-card {
+    background: var(--card);
+    border-radius: 6px;
+    padding: 22px 24px;
+    margin: 26px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 28px;
+  }
+  .info-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-bottom: 5px;
+    font-family: -apple-system, sans-serif;
+  }
+  .info-value {
+    font-size: 15px;
+    color: var(--body);
+    line-height: 1.5;
+  }
+
+  .highlight-card {
+    background: var(--card);
+    border-left: 3px solid var(--gold);
+    border-radius: 4px;
+    padding: 22px 24px;
+    margin: 28px 0;
+  }
+
+  .centered-card {
+    background: var(--card);
+    border-radius: 6px;
+    padding: 26px 24px;
+    margin: 28px 0;
+    text-align: center;
+  }
+  .centered-card .card-label {
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    font-family: -apple-system, sans-serif;
+  }
+  .centered-card .card-body {
+    font-size: 18px;
+    line-height: 1.9;
+    color: var(--cream);
+    font-style: italic;
+  }
+
+  /* Closing page */
+  .closing {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 36px;
+    background: radial-gradient(ellipse at 50% 40%, #2a1f17 0%, var(--bg) 70%);
+  }
+  .closing .heart-circle { width: 60px; height: 60px; font-size: 26px; margin-bottom: 32px; }
+  .closing .big-text {
+    font-size: clamp(26px, 6vw, 42px);
+    font-style: italic;
+    line-height: 1.35;
+    margin-bottom: 22px;
+    max-width: 480px;
+  }
+  .closing .divider { width: 40px; height: 1px; background: var(--gold); margin: 0 auto 24px; }
+  .closing .bday { font-size: 19px; color: var(--gold); margin-bottom: 6px; }
+  .closing .love { font-size: 15px; color: var(--muted); margin-top: 10px; line-height: 1.7; }
+  .closing .visit { font-size: 14px; color: var(--dim); font-style: italic; margin-top: 28px; }
+  .closing .footer {
+    margin-top: 44px;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #2a2218;
+    font-family: -apple-system, sans-serif;
+  }
+
+  @media (max-width: 500px) {
+    .info-card { grid-template-columns: 1fr; gap: 14px; }
+    .page { padding: 44px 18px 28px; }
+    .nav { padding: 12px 16px 18px; }
+    .nav-btn { padding: 10px 18px; font-size: 14px; min-width: 80px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <!-- Dots (hidden on cover) -->
+  <div class="dots" id="dots" style="display:none"></div>
+
+  <!-- Scrollable content -->
+  <div class="content" id="content"></div>
+
+  <!-- Nav (hidden on cover) -->
+  <div class="nav" id="nav" style="display:none">
+    <button class="nav-btn" id="prevBtn">← Back</button>
+    <span class="nav-counter" id="counter"></span>
+    <button class="nav-btn primary" id="nextBtn">Next →</button>
+  </div>
+</div>
+
+<script>
+const FAMILY = "Michael, Carrie, Mackenzie, Brandon, Kelsey & Uncle Mark";
+const TOTAL_PAGES = 7;
+let currentPage = 0;
+
+const pages = [coverHTML, originHTML, becomingHTML, strengthHTML, heartHTML, legacyHTML, closingHTML];
+
+function render() {
+  const el = document.getElementById('content');
+  el.innerHTML = pages[currentPage]();
+  el.scrollTop = 0;
+
+  // Dots
+  const dots = document.getElementById('dots');
+  if (currentPage === 0) {
+    dots.style.display = 'none';
+  } else {
+    dots.style.display = 'flex';
+    dots.innerHTML = '';
+    for (let i = 0; i < TOTAL_PAGES; i++) {
+      const d = document.createElement('button');
+      d.className = 'dot' + (i === currentPage ? ' active' : '');
+      d.onclick = () => goTo(i);
+      dots.appendChild(d);
+    }
+  }
+
+  // Nav
+  const nav = document.getElementById('nav');
+  if (currentPage === 0) {
+    nav.style.display = 'none';
+  } else {
+    nav.style.display = 'flex';
+    document.getElementById('counter').textContent = currentPage + ' of ' + (TOTAL_PAGES - 1);
+    const nextBtn = document.getElementById('nextBtn');
+    if (currentPage === TOTAL_PAGES - 1) {
+      nextBtn.textContent = '↺ Start Over';
+      nextBtn.className = 'nav-btn';
+      nextBtn.onclick = () => goTo(0);
+    } else {
+      nextBtn.textContent = 'Next →';
+      nextBtn.className = 'nav-btn primary';
+      nextBtn.onclick = () => goTo(currentPage + 1);
+    }
+    document.getElementById('prevBtn').onclick = () => goTo(currentPage - 1);
+  }
+
+  // Cover animation
+  if (currentPage === 0) {
+    setTimeout(() => {
+      const ci = document.querySelector('.cover-inner');
+      if (ci) ci.classList.add('show');
+    }, 200);
+  }
+}
+
+function goTo(idx) {
+  if (idx < 0 || idx >= TOTAL_PAGES) return;
+  const el = document.getElementById('content');
+  el.classList.add('fading');
+  setTimeout(() => {
+    currentPage = idx;
+    render();
+    el.classList.remove('fading');
+  }, 300);
+}
+
+// Page content functions
+function coverHTML() {
+  return `
+    <div class="cover">
+      <div class="cover-inner">
+        <div class="label">A Soul Profile</div>
+        <div class="heart-circle">♥</div>
+        <h1>For Mom</h1>
+        <div class="subtitle">Happy 83rd Birthday</div>
+        <div class="date">March 20, 2026</div>
+        <div class="divider"></div>
+        <div class="from">From ${FAMILY}<br>with all our love</div>
+        <button class="open-btn" onclick="goTo(1)">Open Your Card</button>
+      </div>
+    </div>`;
+}
+
+function originHTML() {
+  return `
+    <div class="page">
+      <div class="section-label">Viking, Alberta</div>
+      <div class="section-title">Where She Comes From</div>
+      <div class="section-divider"></div>
+
+      <p class="body-text large">A small town in rural central Alberta. The kind of place where everyone knows your business and you learn to work before you learn to want.</p>
+
+      <p class="body-text">She was the second oldest of seven — five sisters, two brothers. The age gap between her and her youngest brother stretches almost two decades. The two brothers are the babies of the family, and she was already half-grown by the time they came along.</p>
+
+      <div class="info-card">
+        <div><div class="info-label">Hometown</div><div class="info-value">Viking, Alberta</div></div>
+        <div><div class="info-label">Birth Order</div><div class="info-value">Second of seven</div></div>
+        <div><div class="info-label">Sisters</div><div class="info-value">Five (including Claire, who passed)</div></div>
+        <div><div class="info-label">Brothers</div><div class="info-value">Two — the youngest of the bunch</div></div>
+      </div>
+
+      <p class="body-text">She grew up doing farm stuff. Chores that didn't ask your opinion. Seasons that didn't care about your plans. That kind of upbringing either breaks you or builds something in you that never bends. With her, it built something.</p>
+
+      <div class="quote">High school brought lightness. Stories about Glenn Sather setting her hair on fire. Growing up alongside the Sutter brothers and the other Viking lunatics who'd go on to become legends.</div>
+
+      <p class="body-text accent">A small town that punched way above its weight — and she was right in the middle of it.</p>
+    </div>`;
+}
+
+function becomingHTML() {
+  return `
+    <div class="page">
+      <div class="section-label">Education & Family</div>
+      <div class="section-title">Who She Became</div>
+      <div class="section-divider"></div>
+
+      <p class="body-text">She went to university and earned a Master's degree in Education. Not nothing for a farm kid from Viking. She taught middle school, high school — science, social studies, health — and became a high school counselor for many years. Kids who needed someone to actually listen, and she was that person.</p>
+
+      <p class="body-text">Married in 1976. Had Michael. Then Mark. Built a life in Edmonton that looked like a life — houses, vacations, the whole thing. But underneath it ran complicated. Moves from house to house. The Amway era. A bee pollen side business. Everything was a little bit chaos for a lot of years.</p>
+
+      <div class="quote">For the kids, it was great. Vacations happened. Love was present. The camping trips, the lakes, the cabins in the Kananaskis — those were real.</div>
+
+      <p class="body-text">But not everything was perfect. Not everything was normal. Not everything was easy. And the marriage had its own story — one that isn't ours to tell.</p>
+    </div>`;
+}
+
+function strengthHTML() {
+  return `
+    <div class="page">
+      <div class="section-label">Against the Odds</div>
+      <div class="section-title">What She Survived</div>
+      <div class="section-divider"></div>
+
+      <p class="body-text large">MS hit in her mid-forties. The kind of diagnosis that rewrites everything — your body, your plans, your sense of what you can count on.</p>
+
+      <p class="body-text">She fought it while raising two boys, managing a marriage that was fraying, and eventually facing the hardest decision a mother can make.</p>
+
+      <p class="body-text">The divorce came when Michael was in his early teens, Mark around ten. It was hard. It was also, looking back, kind of awesome — the messy, real kind of awesome that comes from surviving things together. Shuttling between places, visiting dad's apartment downtown, figuring it out.</p>
+
+      <div class="highlight-card">
+        <p class="body-text">Then she got sicker. She had to make the extraordinarily difficult decision to let their dad become the primary caregiver. She moved to a small house. Spent a lot of time in hospitals.</p>
+        <p class="body-text accent" style="margin-bottom:0">The boys were kids. They really have no idea what she went through during those years. Not really.</p>
+      </div>
+
+      <p class="body-text">There was a lot of grocery shopping by themselves because she couldn't get out of bed. A lot of figuring things out early. Not because she wanted it that way — because life demanded it, and she'd already given them enough foundation to handle it.</p>
+    </div>`;
+}
+
+function heartHTML() {
+  return `
+    <div class="page">
+      <div class="section-label">The Real Her</div>
+      <div class="section-title">What She Carries</div>
+      <div class="section-divider"></div>
+
+      <p class="body-text">Here's the thing about her: when she couldn't work anymore, she didn't stop. She started volunteering. Helping families that had nothing.</p>
+
+      <div class="quote">She barely had anything herself — surviving on Canadian social security — and she was out there helping people hit by disasters, families with even less than her. That's not charity. That's character.</div>
+
+      <p class="body-text">Eventually a care home was the only option. She's been there for close to twenty years now. Maybe longer. And she's still <em>her</em>. Still asking about your life. Still remembering details — even as the dementia chips away at the edges.</p>
+
+      <div class="centered-card">
+        <div class="card-label">How She Shows Up — Every Time</div>
+        <div class="card-body">
+          Always listens.<br>
+          Always takes the time to ask<br>
+          how you're doing, what you're doing,<br>
+          who you're doing it with.<br><br>
+          Remembers the details<br>
+          even when the details are starting to slip.
+        </div>
+      </div>
+
+      <p class="body-text">She's been a good grandmother despite the distance. Being apart from your people when you're in a home, when your body doesn't cooperate, when you need them close — and they're far. She still shows up with love every single time.</p>
+    </div>`;
+}
+
+function legacyHTML() {
+  return `
+    <div class="page">
+      <div class="section-label">The Imprint</div>
+      <div class="section-title">What She Left in Us</div>
+      <div class="section-divider"></div>
+
+      <p class="body-text large">She went to extraordinary lengths. Not the kind people talk about today — where the Wi-Fi goes out and the family has to make eye contact for an hour. The real kind. The kind nobody posts about because you're too busy surviving it.</p>
+
+      <p class="body-text">The kind where you give up custody of your own children because you're too sick to care for them and you love them enough to do what's best even when it destroys you. The kind where you volunteer with nothing. The kind where you keep asking about their lives from a care home bed twenty years in.</p>
+
+      <div class="quote">All that stuff turned us into pretty strong, resilient individuals. And we want to thank her for that.</div>
+
+      <p class="body-text">The camping trips. The lakes. The cabins in the Kananaskis. The family she built around us — that beautiful cross-section of humanity, cousins woven into childhood like they'd always belonged.</p>
+
+      <p class="body-text accent">Thank you for the advice along the way. The listening. The unwavering strength you showed us every single day.</p>
+    </div>`;
+}
+
+function closingHTML() {
+  return `
+    <div class="closing">
+      <div class="heart-circle">♥</div>
+      <div class="big-text">We love you<br>to the moon and back.</div>
+      <div class="divider"></div>
+      <div class="bday">Happy 83rd Birthday, Mom</div>
+      <div class="love">Love always —<br>${FAMILY}</div>
+      <div class="visit">Can't wait to see you in a couple weeks.</div>
+      <div class="footer">Soul Profile · March 20, 2026</div>
+    </div>`;
+}
+
+// Init
+render();
+</script>
+</body>
+</html>
